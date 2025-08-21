@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="refresh" content="600">
+  <title>Weather Info</title>
+<style> 
+body {
+    background-color: lightgray;
+    //border: 3px solid black;
+}
+.City {
+	/* section */
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 800px;
+  height: 75px;
+  //background-color: lime;
+	//border: 3px solid black;
+	/* text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+}
+.Date {
+	/* section */
+  position: absolute;
+  top: 75px;
+  left: 0px;
+  width: 800px;
+  height: 25px;
+  //background-color: lime;
+	//border: 3px solid black;
+	/* text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.Time {
+	/* section */
+  position: absolute;
+  top: 110px;
+  left: 0px;
+  width: 350px;
+  height: 75px;
+  //background-color: beige;
+	//border: 3px solid red;
+	/* text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;  
+}
+.ConditionIcon {
+	/* section */
+  position: absolute;
+  top: 175px;
+  left: 0px;
+  width: 350px;
+  height: 255px;
+  //background-color: beige;
+	//border: 3px solid red;
+	/* text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;  
+}
+.ConditionText {
+	/* section */
+  position: absolute;
+  top: 375px;
+  left: 0px;
+  width: 350px;
+  height: 25px;
+  //background-color: beige;
+	//border: 3px solid red;
+	/* text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;  
+}
+.Temp {
+	/* section */
+  position: absolute;
+  top: 100px;
+  left: 350px;
+  width: 450px;
+  height: 100px;
+  //background-color: cyan;
+	//border: 3px solid blue;
+	/* text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 72px;  
+}
+.FeelsLike {
+	/* section */
+  position: absolute;
+  top: 200px;
+  left: 350px;
+  width: 450px;
+  height: 25px;
+  //background-color: cyan;
+	//border: 3px solid blue;
+	/* text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;  
+}
+.Details {
+	/* section */
+  position: absolute;
+  top: 225px;
+  left: 350px;
+  width: 450px;
+  height: 230px;
+  //background-color: cyan;
+	//border: 3px solid blue;
+	/* text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;  
+}
+.Updated {
+	/* section */
+  position: absolute;
+  top: 455px;
+  left: 0px;
+  width: 800px;
+  height: 25px;
+  //background-color: lime;
+	//border: 3px solid black;
+	/* text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}</style>
+</head>
+<body onload="getWeather()">
+  <div id="weather"></div>
+  <script>
+    async function getWeather() {
+			const city = 'Berthoud, CO'
+      const longitude = '-105.0989'
+      const latitude = '40.30658'
+      const apiKey = '4e292d3c87f2cc62cb6d454207e7dc3b'; // Replace with your OpenWeatherMap API key
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=imperial`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const weatherDiv = document.getElementById('weather');
+        if (data.cod === 200) {
+
+          weatherDiv.innerHTML = `
+
+					<!-- Top -->
+					<section class="City"><code>${city}</code></section>
+					<section class="Date"><code><span id="date"></span></code></section>
+					<!-- Left -->
+					<section class="Time"><code><span id="time"></span></code></section>
+					<section class="ConditionIcon"><code><img src="https://openweathermap.org/img/wn/${data.weather[0].icon}@4x.png" alt="Weather Condition"></code></section>
+					<section class="ConditionText"><code>${data.weather[0].description}</code></section>
+					<!-- Right -->
+					<section class="Temp"><code>${Math.round(data.main.temp)}&degF</code></section>
+					<section class="FeelsLike"><code>Feels like ${Math.round(data.main.feels_like)} &degF</code></section>
+					<section class="Details">
+						<code>
+							<table>
+								<tr>
+									<td>Pressure:</td>
+									<td>${data.main.pressure} hPa</td>
+								</tr>
+								<tr>
+									<td>Humidity:</td>
+									<td>${data.main.humidity}%</td>
+								</tr>
+								<tr>
+									<td>Wind:</td>
+									<td>${data.wind.speed} mph @ ${data.wind.deg}&deg</td>
+								</tr>
+								<tr>
+									<td>Sunrise:</td>
+									<td><span id="sunrise"></span></td>
+								</tr>
+								<tr>
+									<td>Sunset:</td>
+									<td><span id="sunset"></span></td>
+								</tr>
+							</table>
+						</code>
+					</section>
+					<!-- Bottom -->
+					<section class="Updated"><code>Updated: <span id="update_time"></span></code></section>
+
+          `;
+
+					const update_utc = new Date(data.dt * 1000);
+					const update_string = update_utc.toLocaleTimeString();
+					document.getElementById("update_time").textContent = update_string;
+
+					const sunrise_utc = new Date(data.sys.sunrise * 1000);
+					const sunrise_string = sunrise_utc.toLocaleTimeString();
+					document.getElementById("sunrise").textContent = sunrise_string;
+
+					const sunset_utc = new Date(data.sys.sunset * 1000);
+					const sunset_string = sunset_utc.toLocaleTimeString();
+					document.getElementById("sunset").textContent = sunset_string;
+					
+					updateTime();
+					
+
+        } else {
+          weatherDiv.innerHTML = `<p style="color:red;">${data.message}</p>`;
+        }
+      } catch (error) {
+        console.error('Error fetching weather data:', error);
+      }
+    }
+  </script>
+  <script>
+		function get_update_weather(input) {
+			//const update_utc = new Date(${data.dt});
+			//const update_string = data.dt.toLocaleTimeString();
+			//document.getElementById("update_time").textContent = update_string;
+			return "Hello";
+		}
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+			const dateString = now.toLocaleDateString();
+      document.getElementById("date").textContent = dateString;
+      document.getElementById("time").textContent = timeString; //timeString.substring(0,(timeString.length-6));
+    }
+    setInterval(updateTime, 1000);
+    //setInterval(update_weather, 1000);
+		//update_weather();
+    //updateTime(); // Initial call to display time immediately
+  </script>
+</body>
+</html>
